@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+service FileService {
+  rpc Upload (stream File) returns (FileInfo);
+  rpc Download (FileInfo) returns (stream File);
+  rpc Transform (stream File) returns (stream File);
+  rpc ListFiles (Void) returns (stream FileInfo);
+}
+
+message Void {}
+
+message FileInfo {
+  string name = 1;
+  string type = 2;
+  uint32 size = 3;
+}
+
+message File {
+  bytes data = 1;
+}

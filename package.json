@@ -1,0 +1,31 @@
+{
+  "name": "grpc-streams",
+  "version": "0.0.1",
+  "description": "Repositório de exemplo para o projeto grpc-streams",
+  "scripts": {
+    "compile": "protoc --js_out=import_style=commonjs,binary:. proto/*.proto",
+    "start:client": "node client/index.js",
+    "start:server": "node server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rocketseat-experts-club/grpc-streams.git"
+  },
+  "keywords": [
+    "grpc",
+    "streams"
+  ],
+  "author": "Lucas Santos <hello@lsantos.dev> (https://lsantos.dev/)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/rocketseat-experts-club/grpc-streams/issues"
+  },
+  "homepage": "https://github.com/rocketseat-experts-club/grpc-streams#readme",
+  "devDependencies": {
+    "google-protobuf": "^3.20.0-rc.2"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.5.9",
+    "@grpc/proto-loader": "^0.6.9"
+  }
+}

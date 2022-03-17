@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="apple-touch-icon" sizes="57x57" href="/assets/icons/apple-icon-57x57.png?v=7de4f92592">
+  <link rel="apple-touch-icon" sizes="60x60" href="/assets/icons/apple-icon-60x60.png?v=7de4f92592">
+  <link rel="apple-touch-icon" sizes="72x72" href="/assets/icons/apple-icon-72x72.png?v=7de4f92592">
+  <link rel="apple-touch-icon" sizes="76x76" href="/assets/icons/apple-icon-76x76.png?v=7de4f92592">
+  <link rel="apple-touch-icon" sizes="114x114" href="/assets/icons/apple-icon-114x114.png?v=7de4f92592">
+  <link rel="apple-touch-icon" sizes="120x120" href="/assets/icons/apple-icon-120x120.png?v=7de4f92592">
+  <link rel="apple-touch-icon" sizes="144x144" href="/assets/icons/apple-icon-144x144.png?v=7de4f92592">
+  <link rel="apple-touch-icon" sizes="152x152" href="/assets/icons/apple-icon-152x152.png?v=7de4f92592">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-icon-180x180.png?v=7de4f92592">
+  <link rel="manifest" href="https://blog.lsantos.dev/manifest.json" />
+
+      <meta name=description content="Aprenda a utilizar uma das funcionalidades mais interessantes do gRPC, as streams! Performance e velocidade para dados grandes de forma super simples!" />
+
+  <title>O Guia Completo do gRPC parte 4: Streams</title>
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080016" />
+  <meta name="msapplication-TileColor" content="#080016">
+  <meta name="msapplication-TileImage" content="/assets/icons/ms-icon-144x144.png?v=7de4f92592">
+
+  <link rel="stylesheet" type="text/css" href="/assets/built/screen.css?v=7de4f92592" />
+  <link rel="stylesheet" type="text/css" href="/assets/built/lines.css?v=7de4f92592" />
+  <link rel="stylesheet" type="text/css" href="/assets/built/icons.css?v=7de4f92592" />
+
+      <link rel="stylesheet" href="/assets/built/progress.css?v=7de4f92592">
+    <link rel="stylesheet" href="/assets/built/share-icons.css?v=7de4f92592">
+
+
+  <script src="/assets/built/gtagEvents.js?v=7de4f92592"></script>
+  <script type="module" src="/assets/built/pwabuilder-sw-register.js?v=7de4f92592"></script>
+
+  <meta name="description" content="Aprenda a utilizar uma das funcionalidades mais interessantes do gRPC, as streams! Performance e velocidade para dados grandes de forma super simples!" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="canonical" href="https://blog.lsantos.dev/o-guia-do-grpc-4/" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    <link rel="amphtml" href="https://blog.lsantos.dev/o-guia-do-grpc-4/amp/" />
+    
+    <meta property="og:site_name" content="Lucas Santos" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="O Guia Completo do gRPC parte 4: Streams" />
+    <meta property="og:description" content="Aprenda a utilizar uma das funcionalidades mais interessantes do gRPC, as streams! Performance e velocidade para dados grandes de forma super simples!" />
+    <meta property="og:url" content="https://blog.lsantos.dev/o-guia-do-grpc-4/" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDR8fHN0cmVhbXxlbnwwfHx8fDE2MjQ0Nzg2NjA&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000" />
+    <meta property="article:published_time" content="2021-07-07T12:00:00.000Z" />
+    <meta property="article:modified_time" content="2021-07-07T12:00:00.000Z" />
+    <meta property="article:tag" content="grpc" />
+    <meta property="article:tag" content="javascript" />
+    <meta property="article:tag" content="protobuf" />
+    <meta property="article:tag" content="architecture" />
+    <meta property="article:tag" content="series" />
+    
+    <meta property="article:publisher" content="https://www.facebook.com/lsantos.dev" />
+    <meta property="article:author" content="https://www.facebook.com/lsantos.dev" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="O Guia Completo do gRPC parte 4: Streams" />
+    <meta name="twitter:description" content="Aprenda a utilizar uma das funcionalidades mais interessantes do gRPC, as streams! Performance e velocidade para dados grandes de forma super simples!" />
+    <meta name="twitter:url" content="https://blog.lsantos.dev/o-guia-do-grpc-4/" />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDR8fHN0cmVhbXxlbnwwfHx8fDE2MjQ0Nzg2NjA&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000" />
+    <meta name="twitter:label1" content="Written by" />
+    <meta name="twitter:data1" content="Lucas Santos" />
+    <meta name="twitter:label2" content="Filed under" />
+    <meta name="twitter:data2" content="grpc, javascript, protobuf, architecture, series" />
+    <meta name="twitter:site" content="@_staticvoid" />
+    <meta name="twitter:creator" content="@_staticvoid" />
+    <meta property="og:image:width" content="2000" />
+    <meta property="og:image:height" content="1333" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Lucas Santos",
+        "url": "https://blog.lsantos.dev/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://raw.githubusercontent.com/khaosdoctor/blog-assets/master/images/2020/07/logo.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Lucas Santos",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://raw.githubusercontent.com/khaosdoctor/blog-assets/master/images/2020/07/foto-perfil-instagram.png",
+            "width": 721,
+            "height": 721
+        },
+        "url": "https://blog.lsantos.dev/author/lucas/",
+        "sameAs": [
+            "https://lsantos.dev",
+            "https://www.facebook.com/lsantos.dev",
+            "https://twitter.com/_staticvoid"
+        ]
+    },
+    "headline": "O Guia Completo do gRPC parte 4: Streams",
+    "url": "https://blog.lsantos.dev/o-guia-do-grpc-4/",
+    "datePublished": "2021-07-07T12:00:00.000Z",
+    "dateModified": "2021-07-07T12:00:00.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDR8fHN0cmVhbXxlbnwwfHx8fDE2MjQ0Nzg2NjA&ixlib=rb-1.2.1&q=80&w=2000",
+        "width": 2000,
+        "height": 1333
+    },
+    "keywords": "grpc, javascript, protobuf, architecture, series",
+    "description": "Aprenda a utilizar uma das funcionalidades mais interessantes do gRPC, as streams! Performance e velocidade para dados grandes de forma super simples!",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://blog.lsantos.dev/"
+    }
+}
+    </script>
+
+    <script defer src="https://unpkg.com/@tryghost/portal@~0.14.0/umd/portal.min.js" data-ghost="https://blog.lsantos.dev/"></script><style> .gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <meta name="generator" content="Ghost 3.40" />
+    <link rel="alternate" type="application/rss+xml" title="Lucas Santos" href="https://blog.lsantos.dev/rss/" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<link rel="dns-prefetch" href="https://www.google-analytics.com">
+<link rel="preconect" href="https://www.google-analytics.com">
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-102442319-4"></script>
+<script type="text/javascript">
+    function getSession () { return sessionStorage.getItem('SESSID') }
+    if (!getSession()) sessionStorage.setItem('SESSID', `${Math.random().toString(36).substring(7)}-${(new Date).getTime()}`)
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-102442319-4');
+    
+  // See event refs https://developers.google.com/gtagjs/reference/event
+  function sendCustomEvent (eventName, category, label, options = {}, callback = console.log) {
+      // Callback refs https://developers.google.com/analytics/devguides/collection/gtagjs/sending-data
+      if (callback && typeof callback === 'function') options.event_callback = callback
+      options.event_category = category
+      options.event_label = label
+      options.referrer = document.referrer
+      options.transaction_id = getSession()
+
+      gtag('event', eventName, options)
+  }
+</script>
+
+</head>
+
+<body class="post-template tag-grpc tag-javascript tag-protobuf tag-architecture tag-series">
+  <div class="line-wrapper">
+    <div class="line green"></div>
+    <div class="line red"></div>
+    <div class="line yellow"></div>
+    <div class="line blue"></div>
+  </div>
+
+  <div class="site-wrapper">
+
+    
+<header class="site-header">
+  <div class="outer site-nav-main">
+  <div class="inner">
+    <nav class="site-nav">
+  <div class="site-nav-left">
+    <div class="site-nav-left-content">
+        <a class="site-nav-logo" onclick="sendClickEvent('link_click', 'Header Logo')" href="https://blog.lsantos.dev"><img src="https://raw.githubusercontent.com/khaosdoctor/blog-assets/master/images/2020/07/logo.png"
+               alt="Lucas Santos" /></a>
+      <div class="site-nav-content">
+            <ul class="nav" role="menu">
+      <li onclick="sendClickEvent('link_click', 'Header Home')" class="nav-home"
+          role="menuitem"><a href="https://blog.lsantos.dev/" aria-label="Home">Home</a></li>
+      <li onclick="sendClickEvent('link_click', 'Header Veja meu livro')" class="nav-veja-meu-livro"
+          role="menuitem"><a href="https://tudosobrekubernetes.tech/?utm_source=blog&utm_medium=link_top&utm_campaign=fixed_link" aria-label="Veja meu livro">Veja meu livro</a></li>
+      <li onclick="sendClickEvent('link_click', 'Header Contato')" class="nav-contato"
+          role="menuitem"><a href="https://lsantos.dev?utm_source=blog&utm_medium=link_top&utm_campaign=fixed_link" aria-label="Contato">Contato</a></li>
+  </ul>
+
+          <span class="nav-post-title ">O Guia Completo do gRPC parte 4: Streams</span>
+      </div>
+    </div>
+  </div>
+  <div class="site-nav-right">
+    <a onclick="sendClickEvent('social_icon_click', 'Twitter')" aria-label="Twitter" class="twitter-button icon-link"
+   href="https://twitter.com/_staticvoid" title="Twitter" target="_blank"
+   rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <path
+        d="M30.063 7.313c-.813 1.125-1.75 2.125-2.875 2.938v.75c0 1.563-.188 3.125-.688 4.625a15.088 15.088 0 0 1-2.063 4.438c-.875 1.438-2 2.688-3.25 3.813a15.015 15.015 0 0 1-4.625 2.563c-1.813.688-3.75 1-5.75 1-3.25 0-6.188-.875-8.875-2.625.438.063.875.125 1.375.125 2.688 0 5.063-.875 7.188-2.5-1.25 0-2.375-.375-3.375-1.125s-1.688-1.688-2.063-2.875c.438.063.813.125 1.125.125.5 0 1-.063 1.5-.25-1.313-.25-2.438-.938-3.313-1.938a5.673 5.673 0 0 1-1.313-3.688v-.063c.813.438 1.688.688 2.625.688a5.228 5.228 0 0 1-1.875-2c-.5-.875-.688-1.813-.688-2.75 0-1.063.25-2.063.75-2.938 1.438 1.75 3.188 3.188 5.25 4.25s4.313 1.688 6.688 1.813a5.579 5.579 0 0 1 1.5-5.438c1.125-1.125 2.5-1.688 4.125-1.688s3.063.625 4.188 1.813a11.48 11.48 0 0 0 3.688-1.375c-.438 1.375-1.313 2.438-2.563 3.188 1.125-.125 2.188-.438 3.313-.875z" />
+  </svg>
+</a>
+<a onclick="sendClickEvent('social_icon_click', 'Facebook')" aria-label="Facebook" class="facebook-button icon-link"
+   href="https://fb.com/lsantos.dev" title="Facebook" target="_blank" rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <path
+        d="M16 0c8.837 0 16 7.163 16 16s-7.163 16-16 16S0 24.837 0 16 7.163 0 16 0zm5.204 4.911h-3.546c-2.103 0-4.443.885-4.443 3.934.01 1.062 0 2.08 0 3.225h-2.433v3.872h2.509v11.147h4.61v-11.22h3.042l.275-3.81h-3.397s.007-1.695 0-2.187c0-1.205 1.253-1.136 1.329-1.136h2.054V4.911z" />
+  </svg>
+</a>
+<a onclick="sendClickEvent('social_icon_click', 'Linkedin')" aria-label="Linkedin" class="linkedin-button icon-link"
+   href="https://linkedin.com/in/lhs-santos" title="LinkedIn" target="_blank"
+   rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="linkedin">
+  <path
+        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z">
+  </path>
+</svg>
+</a>
+<a onclick="sendClickEvent('social_icon_click', 'Github')" aria-label="Github" class="github-button icon-link"
+   href="https://github.com/khaosdoctor" title="GitHub" target="_blank" rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="github">
+  <path
+        d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12">
+  </path>
+</svg>
+</a>
+<a onclick="sendClickEvent('social_icon_click', 'Rss')" aria-label="Rss" class="rss-button icon-link"
+   href="https://feedly.com/i/subscription/feed/https://blog.lsantos.dev/rss/" title="RSS" target="_blank"
+   rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <circle cx="6.18" cy="17.82" r="2.18" />
+  <path
+        d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z" />
+  </svg>
+</a>
+       
+      <a onclick="sendLeadEvent('Header Signup')" class="button primary small header-cta"
+         href="https://blog.lsantos.dev#/portal/signup/free">Inscreva-se!</a>
+  </div>
+</nav>
+  </div>
+    <progress data-reading-progress class="reading-progress-bar"></progress>
+</div>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-okaidia.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/line-numbers/prism-line-numbers.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/toolbar/prism-toolbar.min.css" />
+
+  <style type="text/css">
+    pre[class*=language-] {
+      /* Code block style */
+      margin: 1.75em 0;
+      font-size: 1.4rem;
+      background: #07040A;
+      max-width: 100vw;
+    }
+
+    .toolbar {
+      /* Prism Toolbar */
+      transition: none !important;
+      opacity: 1 !important;
+    }
+
+    .toolbar-item {
+      font-family: sans-serif !important;
+      margin-right: 5px;
+    }
+
+    .toolbar span {
+      /* Toolbar Language label */
+      font-weight: bold;
+      background: rgba(107, 10, 13, 0.5) !important;
+      padding: 5px !important;
+    }
+
+    .toolbar button {
+      /* Toolbar Copy Button */
+      padding: 5px !important;
+    }
+  </style>
+
+</header>
+
+
+  <main id="site-main" class="site-main outer">
+    <div class="inner">
+      <article class="post-full post tag-grpc tag-javascript tag-protobuf tag-architecture tag-series ">
+        <header class="post-full-header">
+            <section class="post-full-tags">
+                <a href="/tag/grpc/" onclick="sendClickEvent('tag_click', 'grpc')">grpc</a>
+                <a href="/tag/javascript/" onclick="sendClickEvent('tag_click', 'javascript')">javascript</a>
+                <a href="/tag/protobuf/" onclick="sendClickEvent('tag_click', 'protobuf')">protobuf</a>
+                <a href="/tag/architecture/" onclick="sendClickEvent('tag_click', 'architecture')">architecture</a>
+                <a href="/tag/series/" onclick="sendClickEvent('tag_click', 'series')">series</a>
+            </section>
+
+          <h1 class="post-full-title">O Guia Completo do gRPC parte 4: Streams</h1>
+
+            <p class="post-full-custom-excerpt">Aprenda a utilizar uma das funcionalidades mais interessantes do gRPC, as streams! Performance e velocidade para dados grandes de forma super simples!</p>
+
+          <div class="social-share-outer social-share-beginning">
+  <h4 class="social-share-title">Compartilhe!</h4>
+  <div class="social-share-inner">
+    <a onclick="sendShareEvent('Facebook', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Facebook"
+       class="social-share-link social-share-facebook" rel="noopener noreferrer nofollow external"
+       href="https://www.facebook.com/sharer/sharer.php?u=https://blog.lsantos.dev/o-guia-do-grpc-4/&quote=Acabei de ler 'O Guia Completo do gRPC parte 4: Streams' escrito por Lucas Santos! Leia você também!"
+       target="_blank"><svg focusable="false" aria-hidden="true" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <path
+        d="M16 0c8.837 0 16 7.163 16 16s-7.163 16-16 16S0 24.837 0 16 7.163 0 16 0zm5.204 4.911h-3.546c-2.103 0-4.443.885-4.443 3.934.01 1.062 0 2.08 0 3.225h-2.433v3.872h2.509v11.147h4.61v-11.22h3.042l.275-3.81h-3.397s.007-1.695 0-2.187c0-1.205 1.253-1.136 1.329-1.136h2.054V4.911z" />
+  </svg>
+</a>
+    <a onclick="sendShareEvent('Twitter', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Twitter"
+       class="social-share-link social-share-twitter" rel="noopener noreferrer nofollow external" href="https://twitter.com/intent/tweet?text=Acabei de ler 'O Guia Completo do gRPC parte 4: Streams' escrito por
+       Lucas Santos! Leia você também! https://blog.lsantos.dev/o-guia-do-grpc-4/&related=_staticvoid"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <path
+        d="M30.063 7.313c-.813 1.125-1.75 2.125-2.875 2.938v.75c0 1.563-.188 3.125-.688 4.625a15.088 15.088 0 0 1-2.063 4.438c-.875 1.438-2 2.688-3.25 3.813a15.015 15.015 0 0 1-4.625 2.563c-1.813.688-3.75 1-5.75 1-3.25 0-6.188-.875-8.875-2.625.438.063.875.125 1.375.125 2.688 0 5.063-.875 7.188-2.5-1.25 0-2.375-.375-3.375-1.125s-1.688-1.688-2.063-2.875c.438.063.813.125 1.125.125.5 0 1-.063 1.5-.25-1.313-.25-2.438-.938-3.313-1.938a5.673 5.673 0 0 1-1.313-3.688v-.063c.813.438 1.688.688 2.625.688a5.228 5.228 0 0 1-1.875-2c-.5-.875-.688-1.813-.688-2.75 0-1.063.25-2.063.75-2.938 1.438 1.75 3.188 3.188 5.25 4.25s4.313 1.688 6.688 1.813a5.579 5.579 0 0 1 1.5-5.438c1.125-1.125 2.5-1.688 4.125-1.688s3.063.625 4.188 1.813a11.48 11.48 0 0 0 3.688-1.375c-.438 1.375-1.313 2.438-2.563 3.188 1.125-.125 2.188-.438 3.313-.875z" />
+  </svg>
+</a>
+    <a onclick="sendShareEvent('Linkedin', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Linkedin"
+       class="social-share-link social-share-linkedin" rel="noopener noreferrer nofollow external" href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.lsantos.dev/o-guia-do-grpc-4/&title=O Guia Completo do gRPC parte 4: Streams&summary=Acabei de ler um post escrito por Lucas Santos! Leia você também!&source=https://blog.lsantos.dev
+" target="_blank"><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="linkedin">
+  <path
+        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z">
+  </path>
+</svg>
+</a>
+    <a onclick="sendShareEvent('Telegram', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Telegram"
+       class="social-share-link social-share-telegram" rel="noopener noreferrer nofollow external"
+       href="https://telegram.me/share/url?url=https://blog.lsantos.dev/o-guia-do-grpc-4/&text=Acabei de ler 'O Guia Completo do gRPC parte 4: Streams', escrito por Lucas Santos! Leia você também!"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path
+            d="M25.515 6.896L6.027 14.41c-1.33.534-1.322 1.276-.243 1.606l5 1.56 1.72 5.66c.226.625.115.873.77.873.506 0 .73-.235 1.012-.51l2.43-2.363 5.056 3.734c.93.514 1.602.25 1.834-.863l3.32-15.638c.338-1.363-.52-1.98-1.41-1.577z" />
+</svg>
+</a>
+    <a onclick="sendShareEvent('Whatsapp', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Whatsapp"
+       class="social-share-link social-share-whatsapp" rel="noopener noreferrer nofollow external"
+       href="https://api.whatsapp.com/send?text=Eu acabei de ler 'O Guia Completo do gRPC parte 4: Streams' escrito por Lucas Santos! Leia você também em https://blog.lsantos.dev/o-guia-do-grpc-4/"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M16.21 4.41C9.973 4.41 4.917 9.465 4.917 15.7c0 2.134.592 4.13 1.62 5.832L4.5 27.59l6.25-2.002a11.241 11.241 0 0 0 5.46 1.404c6.234 0 11.29-5.055 11.29-11.29 0-6.237-5.056-11.292-11.29-11.292zm0 20.69c-1.91 0-3.69-.57-5.173-1.553l-3.61 1.156 1.173-3.49a9.345 9.345 0 0 1-1.79-5.512c0-5.18 4.217-9.4 9.4-9.4 5.183 0 9.397 4.22 9.397 9.4 0 5.188-4.214 9.4-9.398 9.4zm5.293-6.832c-.284-.155-1.673-.906-1.934-1.012-.265-.106-.455-.16-.658.12s-.78.91-.954 1.096c-.176.186-.345.203-.628.048-.282-.154-1.2-.494-2.264-1.517-.83-.795-1.373-1.76-1.53-2.055-.158-.295 0-.445.15-.584.134-.124.3-.326.45-.488.15-.163.203-.28.306-.47.104-.19.06-.36-.005-.506-.066-.147-.59-1.587-.81-2.173-.218-.586-.46-.498-.63-.505-.168-.007-.358-.038-.55-.045-.19-.007-.51.054-.78.332-.277.274-1.05.943-1.1 2.362-.055 1.418.926 2.826 1.064 3.023.137.2 1.874 3.272 4.76 4.537 2.888 1.264 2.9.878 3.43.85.53-.027 1.734-.633 2-1.297.266-.664.287-1.24.22-1.363-.07-.123-.26-.203-.54-.357z" />
+</svg>
+</a>
+    <a onclick="sendShareEvent('Reddit', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Reddit"
+       class="social-share-link social-share-reddit" rel="noopener noreferrer nofollow external"
+       href="https://www.reddit.com/submit?url=https://blog.lsantos.dev/o-guia-do-grpc-4/&title=O Guia Completo do gRPC parte 4: Streams, por Lucas Santos"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path
+            d="M28.543 15.774a2.953 2.953 0 0 0-2.951-2.949 2.882 2.882 0 0 0-1.9.713 14.075 14.075 0 0 0-6.85-2.044l1.38-4.349 3.768.884a2.452 2.452 0 1 0 .24-1.176l-4.274-1a.6.6 0 0 0-.709.4l-1.659 5.224a14.314 14.314 0 0 0-7.316 2.029 2.908 2.908 0 0 0-1.872-.681 2.942 2.942 0 0 0-1.618 5.4 5.109 5.109 0 0 0-.062.765c0 4.158 5.037 7.541 11.229 7.541s11.22-3.383 11.22-7.541a5.2 5.2 0 0 0-.053-.706 2.963 2.963 0 0 0 1.427-2.51zm-18.008 1.88a1.753 1.753 0 0 1 1.73-1.74 1.73 1.73 0 0 1 1.709 1.74 1.709 1.709 0 0 1-1.709 1.711 1.733 1.733 0 0 1-1.73-1.711zm9.565 4.968a5.573 5.573 0 0 1-4.081 1.272h-.032a5.576 5.576 0 0 1-4.087-1.272.6.6 0 0 1 .844-.854 4.5 4.5 0 0 0 3.238.927h.032a4.5 4.5 0 0 0 3.237-.927.6.6 0 1 1 .844.854zm-.331-3.256a1.726 1.726 0 1 1 1.709-1.712 1.717 1.717 0 0 1-1.712 1.712z" />
+</svg>
+</a>
+    <a onclick="sendShareEvent('Pocket', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Pocket"
+       class="social-share-link social-share-pocket" rel="noopener noreferrer nofollow external"
+       href="https://getpocket.com/edit.php?url=https://blog.lsantos.dev/o-guia-do-grpc-4/&url=https://blog.lsantos.dev/o-guia-do-grpc-4/&title=O Guia Completo do gRPC parte 4: Streams, por Lucas Santos"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path
+            d="M16.005 6.244c2.927 0 5.854-.002 8.782 0 1.396.002 2.195.78 2.188 2.165-.015 2.483.116 4.985-.11 7.454-.75 8.204-10.027 12.607-16.91 8.064-3.086-2.037-4.82-4.926-4.917-8.673-.06-2.34-.034-4.684-.018-7.025.008-1.214.812-1.98 2.056-1.983 2.975-.01 5.952-.005 8.93-.007zm-5.037 5.483c-.867.093-1.365.396-1.62 1.025-.27.67-.078 1.256.417 1.732a529.74 529.74 0 0 0 5.09 4.838c.745.695 1.537.687 2.278-.01a473.74 473.74 0 0 0 4.93-4.686c.827-.797.91-1.714.252-2.38-.694-.704-1.583-.647-2.447.17-1.097 1.04-2.215 2.06-3.266 3.143-.485.492-.77.432-1.227-.027a87.392 87.392 0 0 0-3.39-3.225c-.325-.29-.77-.448-1.017-.584z" />
+</svg>
+</a>
+  </div>
+</div>
+
+          <div class="post-full-byline">
+
+            <section class="post-full-byline-content">
+
+              <ul class="author-list">
+                  <li class="author-list-item">
+
+                    <div class="author-card">
+                        <img class="author-profile-image" src="https://raw.githubusercontent.com/khaosdoctor/blog-assets/master/images/2020/07/foto-perfil-instagram.png" alt="Lucas Santos" />
+                      <div class="author-info">
+                          <div class="bio">
+                            <h2>Lucas Santos</h2>
+                            <p>Developer since 2011. Writer of &quot;Kubernetes: all you need about orchestration&quot;. Google Dev Expert, Microsoft MVP &amp; Docker Captain. Has been talking about technology worldwide for over 4 years.</p>
+                            <p><a href="/author/lucas/" onclick="sendClickEvent('link_click', 'More Posts From Author Lucas Santos')">Mais posts</a> de
+                              Lucas Santos.</p>
+                          </div>
+                      </div>
+                    </div>
+
+                      <a href="/author/lucas/" class="author-avatar" onclick="sendClickEvent('link_click', 'Author Lucas Santos Avatar')">
+                        <img class="author-profile-image" src="https://raw.githubusercontent.com/khaosdoctor/blog-assets/master/images/2020/07/foto-perfil-instagram.png" alt="Lucas Santos" />
+                      </a>
+
+                  </li>
+              </ul>
+
+              <section class="post-full-byline-meta">
+                <h4 class="author-name"><a href="/author/lucas/">Lucas Santos</a></h4>
+                <div class="byline-meta-content">
+                  <time class="byline-meta-date" datetime="2021-07-07">7 Jul 2021</time>
+                  <span class="byline-reading-time"><span class="bull">&bull;</span>
+                    7 minutos de leitura</span>
+                </div>
+              </section>
+
+            </section>
+
+
+          </div>
+        </header>
+
+
+            <figure class="post-full-image">
+              <img srcset="https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDR8fHN0cmVhbXxlbnwwfHx8fDE2MjQ0Nzg2NjA&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 300w,
+                                https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDR8fHN0cmVhbXxlbnwwfHx8fDE2MjQ0Nzg2NjA&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 600w,
+                                https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDR8fHN0cmVhbXxlbnwwfHx8fDE2MjQ0Nzg2NjA&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 1000w,
+                                https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDR8fHN0cmVhbXxlbnwwfHx8fDE2MjQ0Nzg2NjA&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 2000w" sizes="(max-width: 800px) 400px,
+                            (max-width: 1170px) 1170px,
+                                2000px" src="https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDR8fHN0cmVhbXxlbnwwfHx8fDE2MjQ0Nzg2NjA&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000" alt="O Guia Completo do gRPC parte 4: Streams" />
+            </figure>
+          <section class="post-full-content">
+            <div class="post-content">
+              <!--kg-card-begin: markdown--><h3 id="esteartigopartedeumasrie">Este artigo é parte de uma série</h3>
+<ol>
+<li><a href="https://blog.lsantos.dev/guia-grpc-1/">O guia completo do gRPC parte 1: O que é gRPC?</a></li>
+<li><a href="https://blog.lsantos.dev/o-guia-do-grpc-2/">O guia completo do gRPC parte 2: Mãos à obra com JavaScript</a></li>
+<li><a href="https://blog.lsantos.dev/o-guia-do-grpc-3">O guia completo do gRPC parte 3: Tipos em tudo com TypeScript!</a></li>
+<li><strong><a href="https://blog.lsantos.dev/o-guia-do-grpc-4">O guia completo do gRPC parte 4: Streams!</a></strong></li>
+</ol>
+<hr>
+<!--kg-card-end: markdown--><p>Nos artigos anteriores desta série aprendemos o que é gRPC, como ele funciona e como podemos utilizar esse protocolo para trafegar dados entre sistemas com diferentes tecnologias e linguagens. Porém tudo isso foi feito usando somente os modelos mais simples de definição do protobuf, ou seja, estávamos enviando uma requisição simples e recebendo uma resposta simples em um modelo cliente/servidor.</p><h2 id="streaming">Streaming</h2><p>Além das que são chamadas <em>Unary Calls</em>, temos também <em>Streaming calls</em>, que nada mais são do que respostas e requisições realizadas por meio de uma stream de dados assíncrona. Temos três tipos de streaming calls no gRPC:</p><ul><li><strong>Serverside streaming:</strong> Quando a requisição é enviada de forma simples (unária), mas a resposta do servidor é uma stream de dados.</li><li><strong>Clientside streaming:</strong> É o oposto da anterior, quando temos a requisição sendo enviada em forma de streams de dados e a resposta do servidor é unária.</li><li><strong>Duplex streaming: </strong>Quando tanto a requisição quando a resposta são streams de dados.</li></ul><p>Isso é refletido dentro de um arquivo <code>.proto</code> de forma bem simples. Vamos voltar ao nosso <a href="https://github.com/khaosdoctor/grpc-guide-part2-javascript-sample">repositório para o segundo artigo da série</a>, lá temos o seguinte arquivo <code>notes.proto</code>:</p><pre><code class="language-protobuf">syntax = "proto3";
+
+service NoteService {
+  rpc List (Void) returns (NoteListResponse);
+  rpc Find (NoteFindRequest) returns (NoteFindResponse);
+}
+
+// Entities
+message Note {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message Void {}
+
+// Requests
+message NoteFindRequest {
+  int32 id = 1;
+}
+
+// Responses
+message NoteFindResponse {
+  Note note = 1;
+}
+
+message NoteListResponse {
+  repeated Note notes = 1;
+}</code></pre><p>Se quiséssemos modificar a chamada para que, ao invés de enviarmos uma lista de notas pronta, enviássemos uma stream de notas como resposta no serviço <code>List</code>, podemos simplesmente adicionar a palavra <code>stream</code> na direção que queremos:</p><pre><code class="language-protobuf">service NoteService {
+  rpc List (Void) returns (stream NoteListResponse);
+  rpc Find (NoteFindRequest) returns (NoteFindResponse);
+}</code></pre><p>Pronto! Não precisamos fazer mais nada, nossa resposta vai ser uma stream de notas como definida em <code>NoteListResponse</code>.</p><p>Para os outros modelos de stream, podemos seguir a mesma ideia, se quisermos uma clientside stream, colocamos stream somente do lado da request:</p><pre><code class="language-protobuf">service NoteService {
+  rpc List (Void) returns (NoteListResponse);
+  rpc Find (stream NoteFindRequest) returns (NoteFindResponse);
+}</code></pre><p>E para duplex streams, colocamos <code>stream</code> em ambos os lados:</p><pre><code class="language-protobuf">service NoteService {
+  rpc List (Void) returns (stream NoteListResponse);
+  rpc Find (stream NoteFindRequest) returns (stream NoteFindResponse);
+}</code></pre><h2 id="o-que-s-o-streams">O que são streams</h2><p>Se você ainda não conhece o conceito de streams, não se preocupe, eu fiz uma série de artigos no iMasters somente sobre isso:</p><ul><li><a href="https://imasters.com.br/back-end/streams-no-node-js-o-que-sao-streams-afinal-parte-01">O que são streams - parte 1</a></li><li><a href="https://imasters.com.br/back-end/streams-no-node-js-o-que-sao-streams-afinal-parte-02">O que são streams - parte 2</a></li><li><a href="https://imasters.com.br/back-end/streams-no-node-js-o-que-sao-streams-afinal-parte-03">O que são streams - parte 3</a></li></ul><p>Basicamente, streams são uma corrente contínua de dados que são carregados no momento da sua leitura. Esse modelo tem vários benefícios, por exemplo, quando estamos trabalhando com arquivos ou conteúdos muito grandes, se tivermos que devolver estes conteúdos para quem pediu, teríamos que carregar todo o arquivo na memória primeiro, para depois poder responder.</p><p>Se seu arquivo tem, digamos, 3GB, então você vai usar 3GB de memória. Enquanto em uma stream, você vai mostrando o arquivo conforme ele é carregado e o conteúdo que veio depois vai sendo descartado e liberado da memória. Dessa forma você tem um processamento muito mais rápido usando muito menos recursos.</p><p>Nesta palestra eu mostrei visualmente o que isso significa:</p><figure class="kg-card kg-embed-card"><iframe width="356" height="200" src="https://www.youtube.com/embed/gzWv4PPD4S0?start=3522&feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></figure><p>Por esse motivo, streams são muito utilizadas com arquivos e dados de grande porte, porque elas podem suportar uma quantidade imensa de informação usando pouquíssimos recursos.</p><h2 id="streams-e-grpc">Streams e gRPC</h2><p>Como é tão simples de utilizar streams no gRPC, já era de se esperar que o suporte a elas no protocolo fosse muito bom. E isso é, de fato o que acontece, o suporte a streams no gRPC um dos melhores existentes e integram com quase todas as linguagens suportadas.</p><p>Para esta demonstração, vamos utilizar a mesma aplicação <a href="https://github.com/khaosdoctor/grpc-guide-part2-javascript-sample">que usamos no artigo número 2</a>, e vamos fazer algumas alterações sobre ela para transformar uma chamada unária em uma chamada assíncrona.</p><blockquote>O código desta demonstração está <a href="https://github.com/khaosdoctor/grpc-guide-part-4-sample">no meu GitHub</a></blockquote><p>Vamos começar de uma base, clonamos o repositório original do artigo 2 para podermos ter a aplicação completa. A primeira coisa que precisamos fazer é trocar o nosso arquivo <code>.proto</code> para adicionar uma stream ao serviço de listagem de notas.</p><p>A primeira alteração é simplesmente adicionar <code>stream</code> no <code>rpc List</code>. E depois vamos remover o <code>NoteListResponse</code> para que tenhamos uma resposta somente como <code>Note</code>, o arquivo fica assim:</p><pre><code class="language-protobuf">syntax = "proto3";
+
+service NoteService {
+  rpc List (Void) returns (stream Note);
+  rpc Find (NoteFindRequest) returns (NoteFindResponse);
+}
+
+// Entities
+message Note {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+}
+
+message Void {}
+
+// Requests
+message NoteFindRequest {
+  int32 id = 1;
+}
+
+// Responses
+message NoteFindResponse {
+  Note note = 1;
+}</code></pre><p>É importante ressaltar que estamos somente removendo a entidade de resposta porque, como estamos falando de uma stream, obviamente todos os dados que virão serão notas. Se mantivéssemos como uma resposta do tipo <code>{ note: { } }</code>, a cada chunk da stream teríamos um novo objeto <code>note</code> que teria (claro), uma nota dentro... Isso é bastante repetitivo.</p><h3 id="servidor">Servidor</h3><p>O próximo passo é alterar o nosso servidor, na verdade, somente uma pequena parte dele. A primeira e mais simples alteração que vamos fazer é remover o nosso pequeno banco de dados <em>in loco</em> que temos nossas três notas fixas e passar ele para um arquivo <code>notes.json</code> que vai representar uma quantidade grande de dados.</p><p>Neste arquivo coloquei aproximadamente 200 notas:</p><pre><code class="language-json">[
+  {
+    "id": 0,
+    "title": "Note by Lucas Houston",
+    "description": "Content http://hoateluh.md/caahaese"
+  }, {
+    "id": 1,
+    "title": "Note by Brandon Tran",
+    "description": "Content http://ki.bo/kuwokal"
+  }, {
+    "id": 2,
+    "title": "Note by Michael Gonzalez",
+    "description": "Content http://hifuhi.edu/cowkucgan"
+  }, { ...</code></pre><blockquote>Lembrando que 200 notas não é, nem de perto, uma quantidade grande de dados. Este é apenas um exemplo.</blockquote><p>Agora, carregamos o arquivo no topo do nosso servidor com <code>require</code> (lembrando que isto não funciona para <a href="https://blog.lsantos.dev/os-ecmascript-modules-estao-aqui/">ES Modules</a>:</p><pre><code class="language-js">const grpc = require('grpc')
+const protoLoader = require('@grpc/proto-loader')
+const path = require('path')
+const notes = require('../notes.json')</code></pre><p>A segunda parte do arquivo que vamos mudar será a definição do método <code>List</code>. Para isso vamos olhar a definição antiga por um momento:</p><pre><code class="language-js">function List (_, callback) {
+  return callback(null, { notes })
+}</code></pre><p>Temos algumas coisas para alterar aqui:</p><ol><li>A resposta não pode ser mais <code>{ notes }</code>, porque não vamos mais devolver um objeto</li><li>Não vamos mais poder devolver todo o arquivo de uma vez, ou nossa chunk será muito grande, vamos iterar linha a linha por nota para poder devolver para o cliente</li><li>A assinatura da função não leva mais um callback</li></ol><p>Vamos resolver isso tudo da seguinte maneira, primeiramente, ao invés de dois parâmetros de uma chamada unária, uma stream somente leva um único parâmetro, que vamos chamar de <code>call</code>:</p><pre><code class="language-js">function List (call) {
+    //
+}</code></pre><p>O objeto <code>call</code> é uma implementação de uma stream de escrita juntamente com o registro da chamada, portanto, se tivéssemos algum tipo de parâmetro para ser enviado, poderíamos obte-los através de <code>call.request.parametro</code>.</p><p>Vamos agora definir que uma <em>chunk</em> da nossa stream será uma nota individual, portanto vamos iterar pelo array de notas e devolver as notas individualmente:</p><pre><code class="language-js">function List (call) {
+  for (const note of notes) {
+    call.write(note)
+  }
+  call.end()
+}</code></pre><p>Perceba que estamos chamando <code>call.write</code> e passando diretamente a nota, isto porque alteramos nossa resposta para ser somente uma nota e não um objeto com uma chave <code>note</code>.</p><p>É interessante notar também que, assim que a chamada para <code>write</code> é detectada, a resposta vai ser enviada e o cliente vai receber a mesma, isso é interessante quando temos que fazer algum tipo de processamento, por exemplo, se precisássemos transformar todos os títulos em letras maiúsculas, poderíamos fazer essa transformação e ir enviando os resultados sem esperar que todas as notas fossem carregadas.</p><p>No final, chamamos <code>call.end()</code>, o que é importante, pois instrui o cliente a fechar a conexão, se isso não for feito, o mesmo cliente não poderá fazer outra chamada para o mesmo serviço.</p><h3 id="client">Client</h3><p>Para o cliente, pouquíssima coisa irá mudar, na verdade, somente a chamada do método. Nossa chamada antiga podia ser feita de duas maneiras:</p><pre><code class="language-js">client.listAsync({}).then(console.log)
+client.list({}, (err, notes) =&gt; {
+  if (err) throw err
+  console.log(notes)
+})</code></pre><p>Agora não podemos mais chamar ela de duas formas, pois a stream é obrigatória assíncrona. Além disso, não vamos ter um callback, ao invés disso vamos realizar a chamada para o servidor que nos devolverá uma stream de leitura e, somente depois de criarmos um <em>listener</em> para esta stream, que a chamada será realmente feita e os dados serão retornados.</p><p>Isso significa que vamos trabalhar com o padrão <em>event emitter </em>e <em>event listener</em>, muito comuns no Node e no JavaScript. Nossa função ficará assim:</p><pre><code class="language-js">const noteStream = client.list({})
+noteStream.on('data', console.log)</code></pre><p>Para ser mais explicito, podemos fazer desta forma:</p><pre><code class="language-js">const noteStream = client.list({})
+noteStream.on('data', (note) =&gt; console.log(note))</code></pre><p>A stream também tem outro evento chamado <code>end</code>, que é executado quando a stream do servidor chama o método <code>call.end()</code>. Para escutá-lo, basta criar outro listener;</p><pre><code class="language-js">noteStream.on('end', () =&gt; {})</code></pre><h2 id="clientside-streaming">Clientside streaming</h2><p>Para completarmos o artigo e não deixarmos nada para trás. No caso de utilizarmos um modelo como:</p><pre><code class="language-protobuf">rpc Find (stream NoteFindRequest) returns (NoteFindResponse);</code></pre><p>Onde o cliente que realiza a requisição utilizando streams, vamos ter uma implementação parecida no servidor. A grade diferença é que nosso método <code>Find</code>, do lado do servidor receberá, como primeiro parâmetro, a stream do cliente e o segundo continuará sendo o callback.</p><p>Este é o nosso método antigo, com as duas chamadas unárias:</p><pre><code class="language-js">function Find ({ request: { id } }, callback) { }</code></pre><p>Ele ainda é válido porque a chamada possui uma propriedade <code>request</code>. Mas não temos o método <code>on</code>, então vamos atualizar para:</p><pre><code class="language-js">function Find (call, callback) { }</code></pre><p>E podemos receber os dados do cliente da mesma forma que recebemos os dados do servidor em serverside streaming:</p><pre><code class="language-js">function Find (call, callback) {
+    call.on('data', (data) =&gt; {
+        // fazer algo
+    })
+    call.on('end', () =&gt; {
+        // a chamada terminou
+    })
+}</code></pre><p>E no client, teremos uma chamada exatamente igual ao do servidor, porém temos que contar que o servidor, desta vez, não nos retorna uma stream, portanto temos um callback:</p><pre><code class="language-js">const call = client.find((err, response) =&gt; {
+    if (err) throw err
+    console.log(response)
+})
+
+call.write({ id: 1 })
+call.end()</code></pre><p>A função interna do <code>find</code> só será executada após o método <code>end()</code> ser chamado.</p><h2 id="duplex-streams">Duplex streams</h2><p>Para duplex streams (ou <em>bidirectional streams</em>), basta implementarmos, tanto do lado do servidor quanto do cliente, o parâmetro <code>call</code>. Este parâmetro é uma stream bidirecional que contém tanto o método <code>on</code> quanto o <code>write</code>.</p><p>No server teríamos algo como:</p><pre><code class="language-js">function duplex (call) {
+    call.on('data', (data) =&gt; {
+        // recebendo dados do cliente
+    })
+    call.write('devolvendo dados para o cliente')
+    call.end() // servidor encerra a conexão
+}</code></pre><p>E no client teríamos uma chamada como:</p><pre><code class="language-js">const duplex = client.duplex()
+duplex.on('data' (data) =&gt; {
+	// recebe dados do servidor
+})
+duplex.write('envia dados ao servidor')
+duplex.close() // client fecha conexão</code></pre>
+            </div>
+            <div class="social-share-outer social-share-end">
+  <h4 class="social-share-title">Compartilhe!</h4>
+  <div class="social-share-inner">
+    <a onclick="sendShareEvent('Facebook', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Facebook"
+       class="social-share-link social-share-facebook" rel="noopener noreferrer nofollow external"
+       href="https://www.facebook.com/sharer/sharer.php?u=https://blog.lsantos.dev/o-guia-do-grpc-4/&quote=Acabei de ler 'O Guia Completo do gRPC parte 4: Streams' escrito por Lucas Santos! Leia você também!"
+       target="_blank"><svg focusable="false" aria-hidden="true" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <path
+        d="M16 0c8.837 0 16 7.163 16 16s-7.163 16-16 16S0 24.837 0 16 7.163 0 16 0zm5.204 4.911h-3.546c-2.103 0-4.443.885-4.443 3.934.01 1.062 0 2.08 0 3.225h-2.433v3.872h2.509v11.147h4.61v-11.22h3.042l.275-3.81h-3.397s.007-1.695 0-2.187c0-1.205 1.253-1.136 1.329-1.136h2.054V4.911z" />
+  </svg>
+</a>
+    <a onclick="sendShareEvent('Twitter', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Twitter"
+       class="social-share-link social-share-twitter" rel="noopener noreferrer nofollow external" href="https://twitter.com/intent/tweet?text=Acabei de ler 'O Guia Completo do gRPC parte 4: Streams' escrito por
+       Lucas Santos! Leia você também! https://blog.lsantos.dev/o-guia-do-grpc-4/&related=_staticvoid"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <path
+        d="M30.063 7.313c-.813 1.125-1.75 2.125-2.875 2.938v.75c0 1.563-.188 3.125-.688 4.625a15.088 15.088 0 0 1-2.063 4.438c-.875 1.438-2 2.688-3.25 3.813a15.015 15.015 0 0 1-4.625 2.563c-1.813.688-3.75 1-5.75 1-3.25 0-6.188-.875-8.875-2.625.438.063.875.125 1.375.125 2.688 0 5.063-.875 7.188-2.5-1.25 0-2.375-.375-3.375-1.125s-1.688-1.688-2.063-2.875c.438.063.813.125 1.125.125.5 0 1-.063 1.5-.25-1.313-.25-2.438-.938-3.313-1.938a5.673 5.673 0 0 1-1.313-3.688v-.063c.813.438 1.688.688 2.625.688a5.228 5.228 0 0 1-1.875-2c-.5-.875-.688-1.813-.688-2.75 0-1.063.25-2.063.75-2.938 1.438 1.75 3.188 3.188 5.25 4.25s4.313 1.688 6.688 1.813a5.579 5.579 0 0 1 1.5-5.438c1.125-1.125 2.5-1.688 4.125-1.688s3.063.625 4.188 1.813a11.48 11.48 0 0 0 3.688-1.375c-.438 1.375-1.313 2.438-2.563 3.188 1.125-.125 2.188-.438 3.313-.875z" />
+  </svg>
+</a>
+    <a onclick="sendShareEvent('Linkedin', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Linkedin"
+       class="social-share-link social-share-linkedin" rel="noopener noreferrer nofollow external" href="https://www.linkedin.com/shareArticle?mini=true&url=https://blog.lsantos.dev/o-guia-do-grpc-4/&title=O Guia Completo do gRPC parte 4: Streams&summary=Acabei de ler um post escrito por Lucas Santos! Leia você também!&source=https://blog.lsantos.dev
+" target="_blank"><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="linkedin">
+  <path
+        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z">
+  </path>
+</svg>
+</a>
+    <a onclick="sendShareEvent('Telegram', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Telegram"
+       class="social-share-link social-share-telegram" rel="noopener noreferrer nofollow external"
+       href="https://telegram.me/share/url?url=https://blog.lsantos.dev/o-guia-do-grpc-4/&text=Acabei de ler 'O Guia Completo do gRPC parte 4: Streams', escrito por Lucas Santos! Leia você também!"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path
+            d="M25.515 6.896L6.027 14.41c-1.33.534-1.322 1.276-.243 1.606l5 1.56 1.72 5.66c.226.625.115.873.77.873.506 0 .73-.235 1.012-.51l2.43-2.363 5.056 3.734c.93.514 1.602.25 1.834-.863l3.32-15.638c.338-1.363-.52-1.98-1.41-1.577z" />
+</svg>
+</a>
+    <a onclick="sendShareEvent('Whatsapp', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Whatsapp"
+       class="social-share-link social-share-whatsapp" rel="noopener noreferrer nofollow external"
+       href="https://api.whatsapp.com/send?text=Eu acabei de ler 'O Guia Completo do gRPC parte 4: Streams' escrito por Lucas Santos! Leia você também em https://blog.lsantos.dev/o-guia-do-grpc-4/"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M16.21 4.41C9.973 4.41 4.917 9.465 4.917 15.7c0 2.134.592 4.13 1.62 5.832L4.5 27.59l6.25-2.002a11.241 11.241 0 0 0 5.46 1.404c6.234 0 11.29-5.055 11.29-11.29 0-6.237-5.056-11.292-11.29-11.292zm0 20.69c-1.91 0-3.69-.57-5.173-1.553l-3.61 1.156 1.173-3.49a9.345 9.345 0 0 1-1.79-5.512c0-5.18 4.217-9.4 9.4-9.4 5.183 0 9.397 4.22 9.397 9.4 0 5.188-4.214 9.4-9.398 9.4zm5.293-6.832c-.284-.155-1.673-.906-1.934-1.012-.265-.106-.455-.16-.658.12s-.78.91-.954 1.096c-.176.186-.345.203-.628.048-.282-.154-1.2-.494-2.264-1.517-.83-.795-1.373-1.76-1.53-2.055-.158-.295 0-.445.15-.584.134-.124.3-.326.45-.488.15-.163.203-.28.306-.47.104-.19.06-.36-.005-.506-.066-.147-.59-1.587-.81-2.173-.218-.586-.46-.498-.63-.505-.168-.007-.358-.038-.55-.045-.19-.007-.51.054-.78.332-.277.274-1.05.943-1.1 2.362-.055 1.418.926 2.826 1.064 3.023.137.2 1.874 3.272 4.76 4.537 2.888 1.264 2.9.878 3.43.85.53-.027 1.734-.633 2-1.297.266-.664.287-1.24.22-1.363-.07-.123-.26-.203-.54-.357z" />
+</svg>
+</a>
+    <a onclick="sendShareEvent('Reddit', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Reddit"
+       class="social-share-link social-share-reddit" rel="noopener noreferrer nofollow external"
+       href="https://www.reddit.com/submit?url=https://blog.lsantos.dev/o-guia-do-grpc-4/&title=O Guia Completo do gRPC parte 4: Streams, por Lucas Santos"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path
+            d="M28.543 15.774a2.953 2.953 0 0 0-2.951-2.949 2.882 2.882 0 0 0-1.9.713 14.075 14.075 0 0 0-6.85-2.044l1.38-4.349 3.768.884a2.452 2.452 0 1 0 .24-1.176l-4.274-1a.6.6 0 0 0-.709.4l-1.659 5.224a14.314 14.314 0 0 0-7.316 2.029 2.908 2.908 0 0 0-1.872-.681 2.942 2.942 0 0 0-1.618 5.4 5.109 5.109 0 0 0-.062.765c0 4.158 5.037 7.541 11.229 7.541s11.22-3.383 11.22-7.541a5.2 5.2 0 0 0-.053-.706 2.963 2.963 0 0 0 1.427-2.51zm-18.008 1.88a1.753 1.753 0 0 1 1.73-1.74 1.73 1.73 0 0 1 1.709 1.74 1.709 1.709 0 0 1-1.709 1.711 1.733 1.733 0 0 1-1.73-1.711zm9.565 4.968a5.573 5.573 0 0 1-4.081 1.272h-.032a5.576 5.576 0 0 1-4.087-1.272.6.6 0 0 1 .844-.854 4.5 4.5 0 0 0 3.238.927h.032a4.5 4.5 0 0 0 3.237-.927.6.6 0 1 1 .844.854zm-.331-3.256a1.726 1.726 0 1 1 1.709-1.712 1.717 1.717 0 0 1-1.712 1.712z" />
+</svg>
+</a>
+    <a onclick="sendShareEvent('Pocket', '60d3933604791135df105eb6', 'Content Shared: &quot;O Guia Completo do gRPC parte 4: Streams&quot;')" aria-label="Share to Pocket"
+       class="social-share-link social-share-pocket" rel="noopener noreferrer nofollow external"
+       href="https://getpocket.com/edit.php?url=https://blog.lsantos.dev/o-guia-do-grpc-4/&url=https://blog.lsantos.dev/o-guia-do-grpc-4/&title=O Guia Completo do gRPC parte 4: Streams, por Lucas Santos"
+       target="_blank"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <path
+            d="M16.005 6.244c2.927 0 5.854-.002 8.782 0 1.396.002 2.195.78 2.188 2.165-.015 2.483.116 4.985-.11 7.454-.75 8.204-10.027 12.607-16.91 8.064-3.086-2.037-4.82-4.926-4.917-8.673-.06-2.34-.034-4.684-.018-7.025.008-1.214.812-1.98 2.056-1.983 2.975-.01 5.952-.005 8.93-.007zm-5.037 5.483c-.867.093-1.365.396-1.62 1.025-.27.67-.078 1.256.417 1.732a529.74 529.74 0 0 0 5.09 4.838c.745.695 1.537.687 2.278-.01a473.74 473.74 0 0 0 4.93-4.686c.827-.797.91-1.714.252-2.38-.694-.704-1.583-.647-2.447.17-1.097 1.04-2.215 2.06-3.266 3.143-.485.492-.77.432-1.227-.027a87.392 87.392 0 0 0-3.39-3.225c-.325-.29-.77-.448-1.017-.584z" />
+</svg>
+</a>
+  </div>
+</div>
+          </section>
+
+
+        <section class="post-full-newsletter">
+          <section class="subscribe-form">
+            <h3 class="subscribe-form-title">Assine a newsletter!</h3>
+            <p class="subscribe-form-description">Receba conteúdos exclusivos diretamente no seu email!</p>
+            <form data-members-form="subscribe">
+              <div class="form-group">
+                <input class="subscribe-email" data-members-email placeholder="Digite seu email..." autocomplete="false" />
+                <button class="button primary" type="submit"
+                        onclick="sendConvertionEvent(`${document.querySelector('input.subscribe-email').value} in post &quot;O Guia Completo do gRPC parte 4: Streams&quot; Subscribe Form`)">
+                  <span class="button-content">Inscreva-se!</span>
+                  <span class="button-loader"><svg focusable="false" aria-hidden="true" version="1.1" id="loader-1" xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40"
+     enable-background="new 0 0 40 40" xml:space="preserve">
+    <path opacity="0.2" fill="#000" d="M20.201,5.169c-8.254,0-14.946,6.692-14.946,14.946c0,8.255,6.692,14.946,14.946,14.946
+s14.946-6.691,14.946-14.946C35.146,11.861,28.455,5.169,20.201,5.169z M20.201,31.749c-6.425,0-11.634-5.208-11.634-11.634
+c0-6.425,5.209-11.634,11.634-11.634c6.425,0,11.633,5.209,11.633,11.634C31.834,26.541,26.626,31.749,20.201,31.749z" />
+    <path fill="#000" d="M26.013,10.047l1.654-2.866c-2.198-1.272-4.743-2.012-7.466-2.012h0v3.312h0
+C22.32,8.481,24.301,9.057,26.013,10.047z">
+        <animateTransform attributeType="xml" attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.5s"
+                          repeatCount="indefinite" />
+    </path>
+</svg>
+</span>
+                </button>
+              </div>
+              <div class="message-success">
+                <strong>Excelente!</strong> Um e-mail foi enviado a você. Clique no link para ativar sua conta!
+              </div>
+              <div class="message-error">
+                Este não é um e-mail válido!
+              </div>
+            </form>
+          </section>
+        </section>
+
+        <section class="post-full-comments">
+          <div id="disqus_thread"></div>
+          <script>
+            var disqus_config = function () {
+              this.page.url = "https://blog.lsantos.dev/o-guia-do-grpc-4/";
+              this.page.identifier = "ghost-60d3933604791135df105eb6"
+            };
+            (function () {
+              var d = document, s = d.createElement('script');
+              s.src = 'https://lsantos-blog.disqus.com/embed.js';
+              s.setAttribute('data-timestamp', +new Date());
+              (d.head || d.body).appendChild(s);
+            })();
+          </script>
+        </section>
+
+      </article>
+
+    </div>
+  </main>
+
+  <aside class="read-next outer">
+    <div class="inner">
+      <h2 class="read-next-title">Você também pode gostar</h2>
+      <div class="read-next-feed">
+              <article class="read-next-card">
+                <header class="read-next-card-header">
+                    <h3><span>Mais na tag </span> <a
+                         onclick="sendClickEvent('related_tag_click', 'Post &quot;&quot; - Tag grpc')"
+                         href="/tag/grpc/">grpc</a></h3>
+                </header>
+                <div class="read-next-card-content">
+                  <ul>
+                        <li>
+                          <h4><a onclick="sendViewPostEvent('60a6c9ea5868507c4d4f3a6a', 'related_post', 'O guia completo do gRPC parte 3: Tipos em tudo com TypeScript!')" href="/o-guia-do-grpc-3/">O guia completo do gRPC parte 3: Tipos em tudo com TypeScript!</a></h4>
+                          <div class="read-next-card-meta">
+                            <p><time datetime="2021-05-26">26 Mai 2021</time>
+                              –
+                              16 minutos de leitura</p>
+                          </div>
+                        </li>
+                        <li>
+                          <h4><a onclick="sendViewPostEvent('6089bf6f82f748731771304f', 'related_post', 'O guia completo do gRPC parte 2: Mãos à obra com JavaScript')" href="/o-guia-do-grpc-2/">O guia completo do gRPC parte 2: Mãos à obra com JavaScript</a></h4>
+                          <div class="read-next-card-meta">
+                            <p><time datetime="2021-05-12">12 Mai 2021</time>
+                              –
+                              17 minutos de leitura</p>
+                          </div>
+                        </li>
+                        <li>
+                          <h4><a onclick="sendViewPostEvent('6064b5bf4f2e0673b0faa9b2', 'related_post', 'O guia completo do gRPC parte 1: O que é gRPC?')" href="/guia-grpc-1/">O guia completo do gRPC parte 1: O que é gRPC?</a></h4>
+                          <div class="read-next-card-meta">
+                            <p><time datetime="2021-04-20">20 Abr 2021</time>
+                              –
+                              12 minutos de leitura</p>
+                          </div>
+                        </li>
+                        <li>
+                          <h4><a onclick="sendViewPostEvent('605d24a43fb9b227b4274025', 'related_post', '#DockerSP - Entendendo o ecossistema de containers além do Docker')" href="/dockersp-entendendo-o-ecossistema-de-containers-alem-do-docker/">#DockerSP - Entendendo o ecossistema de containers além do Docker</a></h4>
+                          <div class="read-next-card-meta">
+                            <p><time datetime="2021-03-25">25 Mar 2021</time>
+                              –
+                              1 minuto de leitura</p>
+                          </div>
+                        </li>
+                        <li>
+                          <h4><a onclick="sendViewPostEvent('5fc945b782fe7182732666e3', 'related_post', 'gRPC com Node.js no EnterJS 2020')" href="/grpc-com-node-js-no-enterjs-2020/">gRPC com Node.js no EnterJS 2020</a></h4>
+                          <div class="read-next-card-meta">
+                            <p><time datetime="2020-12-03">3 Dez 2020</time>
+                              –
+                              1 minuto de leitura</p>
+                          </div>
+                        </li>
+                  </ul>
+                </div>
+                <footer class="read-next-card-footer">
+                  <a onclick="sendClickEvent('see_more_from_tag', 'From post &quot;&quot; - Tag
+                     grpc')"
+                     href="/tag/grpc/">Veja todos os 6 posts
+                    →</a>
+                </footer>
+              </article>
+
+              <article
+         class="post-card post tag-javascript tag-nodejs tag-development tag-architecture ">
+
+    <a class="post-card-image-link" onclick="sendViewPostEvent('622e3d088f9344529def3237', 'post', 'Entendendo timers/promises e AbortControllers no Node.js')" href="/timers-abort-controllers/">
+      <img class="post-card-image" srcset="https://images.unsplash.com/photo-1605143185650-77944b152643?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDUzfHx0aW1lfGVufDB8fHx8MTY0NzE5ODQyMg&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 300w,
+                    https://images.unsplash.com/photo-1605143185650-77944b152643?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDUzfHx0aW1lfGVufDB8fHx8MTY0NzE5ODQyMg&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 600w,
+                    https://images.unsplash.com/photo-1605143185650-77944b152643?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDUzfHx0aW1lfGVufDB8fHx8MTY0NzE5ODQyMg&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 1000w,
+                    https://images.unsplash.com/photo-1605143185650-77944b152643?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDUzfHx0aW1lfGVufDB8fHx8MTY0NzE5ODQyMg&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 2000w" sizes="(max-width: 1000px) 400px, 700px"
+           src="https://images.unsplash.com/photo-1605143185650-77944b152643?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDUzfHx0aW1lfGVufDB8fHx8MTY0NzE5ODQyMg&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000" alt="Entendendo timers/promises e AbortControllers no Node.js" />
+    </a>
+
+  <div class="post-card-content">
+
+    <a class="post-card-content-link" onclick="sendViewPostEvent('622e3d088f9344529def3237', 'post', 'Entendendo timers/promises e AbortControllers no Node.js')" href="/timers-abort-controllers/">
+
+      <header class="post-card-header">
+        <div class="post-card-header-tags">
+              <div class="post-card-primary-tag">javascript</div>
+
+        </div>
+        <h2 class="post-card-title">Entendendo timers/promises e AbortControllers no Node.js</h2>
+      </header>
+
+      <section class="post-card-excerpt">
+          <p>Saiba tudo sobre as novas formas de cancelar funções assíncronas e declarar intervalos de tempos com promises no Node.js</p>
+      </section>
+
+    </a>
+
+    <footer class="post-card-meta">
+      <ul class="author-list">
+      </ul>
+      <div class="post-card-byline-content">
+        <span></span>
+        <span class="post-card-byline-date"><time datetime="2022-03-14">14 Mar 2022</time> <span
+                class="bull">&bull;</span>
+          9 minutos de leitura</span>
+      </div>
+    </footer>
+
+  </div>
+
+</article>
+              <article
+         class="post-card post tag-javascript tag-architecture ">
+
+    <a class="post-card-image-link" onclick="sendViewPostEvent('61f81f803e36973a8a17e7fe', 'post', 'As más práticas mais comuns no JavaScript')" href="/mas-praticas-javascript/">
+      <img class="post-card-image" srcset="https://images.unsplash.com/photo-1583558954748-e8666eb10c0c?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDI5fHxicm9rZW58ZW58MHx8fHwxNjQzNjY1NzE0&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 300w,
+                    https://images.unsplash.com/photo-1583558954748-e8666eb10c0c?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDI5fHxicm9rZW58ZW58MHx8fHwxNjQzNjY1NzE0&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 600w,
+                    https://images.unsplash.com/photo-1583558954748-e8666eb10c0c?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDI5fHxicm9rZW58ZW58MHx8fHwxNjQzNjY1NzE0&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 1000w,
+                    https://images.unsplash.com/photo-1583558954748-e8666eb10c0c?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDI5fHxicm9rZW58ZW58MHx8fHwxNjQzNjY1NzE0&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000 2000w" sizes="(max-width: 1000px) 400px, 700px"
+           src="https://images.unsplash.com/photo-1583558954748-e8666eb10c0c?crop&#x3D;entropy&amp;cs&#x3D;tinysrgb&amp;fit&#x3D;max&amp;fm&#x3D;jpg&amp;ixid&#x3D;MnwxMTc3M3wwfDF8c2VhcmNofDI5fHxicm9rZW58ZW58MHx8fHwxNjQzNjY1NzE0&amp;ixlib&#x3D;rb-1.2.1&amp;q&#x3D;80&amp;w&#x3D;2000" alt="As más práticas mais comuns no JavaScript" />
+    </a>
+
+  <div class="post-card-content">
+
+    <a class="post-card-content-link" onclick="sendViewPostEvent('61f81f803e36973a8a17e7fe', 'post', 'As más práticas mais comuns no JavaScript')" href="/mas-praticas-javascript/">
+
+      <header class="post-card-header">
+        <div class="post-card-header-tags">
+              <div class="post-card-primary-tag">javascript</div>
+
+        </div>
+        <h2 class="post-card-title">As más práticas mais comuns no JavaScript</h2>
+      </header>
+
+      <section class="post-card-excerpt">
+          <p>Venha aprender algumas da práticas consideradas "más" no JavaScript e como você pode contorna-las para fazer seu código melhor!</p>
+      </section>
+
+    </a>
+
+    <footer class="post-card-meta">
+      <ul class="author-list">
+      </ul>
+      <div class="post-card-byline-content">
+        <span></span>
+        <span class="post-card-byline-date"><time datetime="2022-02-01">1 Fev 2022</time> <span
+                class="bull">&bull;</span>
+          12 minutos de leitura</span>
+      </div>
+    </footer>
+
+  </div>
+
+</article>
+      </div>
+    </div>
+  </aside>
+
+
+
+
+
+
+    <footer class="site-footer outer">
+      <div class="site-footer-content inner">
+        <section class="copyright">
+          <a onclick="sendClickEvent('link_click', 'Footer URL')" href="https://blog.lsantos.dev">Lucas Santos <span class="version-number"></span></a> &copy;
+2022
+<a onclick="sendClickEvent('link_click', 'Footer Home')" href="https://blog.lsantos.dev">Home</a>
+<a onclick="sendLeadEvent('Footer Subscribe')" href="https://blog.lsantos.dev#/portal/signup/free">Inscreva-se!</a>
+
+                <a onclick="sendClickEvent('link_click', 'Footer Veja meu livro')" class="nav-veja-meu-livro"
+       href="https://tudosobrekubernetes.tech/?utm_source=blog&utm_medium=link_bottom&utm_campaign=fixed_link" aria-label="Veja meu livro">Veja meu livro</a>
+    <a onclick="sendClickEvent('link_click', 'Footer Contato')" class="nav-contato"
+       href="https://lsantos.dev?utm_source=blog&utm_medium=link_bottom&utm_campaign=fixed_link" aria-label="Contato">Contato</a>
+
+        </section>
+        <nav class="site-footer-nav">
+          <a onclick="sendClickEvent('social_icon_click', 'Twitter')" aria-label="Twitter" class="twitter-button icon-link"
+   href="https://twitter.com/_staticvoid" title="Twitter" target="_blank"
+   rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <path
+        d="M30.063 7.313c-.813 1.125-1.75 2.125-2.875 2.938v.75c0 1.563-.188 3.125-.688 4.625a15.088 15.088 0 0 1-2.063 4.438c-.875 1.438-2 2.688-3.25 3.813a15.015 15.015 0 0 1-4.625 2.563c-1.813.688-3.75 1-5.75 1-3.25 0-6.188-.875-8.875-2.625.438.063.875.125 1.375.125 2.688 0 5.063-.875 7.188-2.5-1.25 0-2.375-.375-3.375-1.125s-1.688-1.688-2.063-2.875c.438.063.813.125 1.125.125.5 0 1-.063 1.5-.25-1.313-.25-2.438-.938-3.313-1.938a5.673 5.673 0 0 1-1.313-3.688v-.063c.813.438 1.688.688 2.625.688a5.228 5.228 0 0 1-1.875-2c-.5-.875-.688-1.813-.688-2.75 0-1.063.25-2.063.75-2.938 1.438 1.75 3.188 3.188 5.25 4.25s4.313 1.688 6.688 1.813a5.579 5.579 0 0 1 1.5-5.438c1.125-1.125 2.5-1.688 4.125-1.688s3.063.625 4.188 1.813a11.48 11.48 0 0 0 3.688-1.375c-.438 1.375-1.313 2.438-2.563 3.188 1.125-.125 2.188-.438 3.313-.875z" />
+  </svg>
+</a>
+<a onclick="sendClickEvent('social_icon_click', 'Facebook')" aria-label="Facebook" class="facebook-button icon-link"
+   href="https://fb.com/lsantos.dev" title="Facebook" target="_blank" rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <path
+        d="M16 0c8.837 0 16 7.163 16 16s-7.163 16-16 16S0 24.837 0 16 7.163 0 16 0zm5.204 4.911h-3.546c-2.103 0-4.443.885-4.443 3.934.01 1.062 0 2.08 0 3.225h-2.433v3.872h2.509v11.147h4.61v-11.22h3.042l.275-3.81h-3.397s.007-1.695 0-2.187c0-1.205 1.253-1.136 1.329-1.136h2.054V4.911z" />
+  </svg>
+</a>
+<a onclick="sendClickEvent('social_icon_click', 'Linkedin')" aria-label="Linkedin" class="linkedin-button icon-link"
+   href="https://linkedin.com/in/lhs-santos" title="LinkedIn" target="_blank"
+   rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="linkedin">
+  <path
+        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z">
+  </path>
+</svg>
+</a>
+<a onclick="sendClickEvent('social_icon_click', 'Github')" aria-label="Github" class="github-button icon-link"
+   href="https://github.com/khaosdoctor" title="GitHub" target="_blank" rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="github">
+  <path
+        d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12">
+  </path>
+</svg>
+</a>
+<a onclick="sendClickEvent('social_icon_click', 'Rss')" aria-label="Rss" class="rss-button icon-link"
+   href="https://feedly.com/i/subscription/feed/https://blog.lsantos.dev/rss/" title="RSS" target="_blank"
+   rel="noopener external noreferrer nofollow"><svg focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <circle cx="6.18" cy="17.82" r="2.18" />
+  <path
+        d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z" />
+  </svg>
+</a>
+          Powered by
+          <a onclick="sendClickEvent('link_click', 'Footer Ghost')" href="https://ghost.org" target="_blank"
+             rel="noopener external noreferrer nofollow">Ghost</a>
+        </nav>
+      </div>
+    </footer>
+
+  </div>
+
+  <div class="notification notification-subscribe">
+  <a class="notification-close" href="javascript:;"></a>
+  Muito obrigado! Você agora é um membro deste blog!
+</div>
+
+<div class="notification notification-signup">
+  <a class="notification-close" href="javascript:;"></a>
+  Great! Next, complete checkout for full access to Lucas Santos
+</div>
+
+<div class="notification notification-signin">
+  <a class="notification-close" href="javascript:;"></a>
+  Olá que bom que você voltou!
+</div>
+
+<div class="notification notification-checkout">
+  <a class="notification-close" href="javascript:;"></a>
+  Sua conta foi ativada com sucesso! Espero que goste do conteúdo 🤓
+</div>
+
+<div class="notification notification-billing-update">
+  <a class="notification-close" href="javascript:;"></a>
+  Sua informação de cobrança foi atualizada
+</div>
+
+<div class="notification notification-billing-update-cancel">
+  <a class="notification-close" href="javascript:;"></a>
+  Atualização falhou
+</div>
+
+
+
+  <script>
+    var images = document.querySelectorAll('.kg-gallery-image img');
+    images.forEach(function (image) {
+      var container = image.closest('.kg-gallery-image');
+      var width = image.attributes.width.value;
+      var height = image.attributes.height.value;
+      var ratio = width / height;
+      container.style.flex = ratio + ' 1 0%';
+    });
+  </script>
+
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous">
+          </script>
+  <script type="text/javascript" src="/assets/built/jquery.fitvids.js?v=7de4f92592"></script>
+
+  <script src="/assets/built/infinitescroll.js?v=7de4f92592"></script>
+
+  <script>
+    // Parse the URL parameter
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, "\\$&");
+      var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    // Give the parameter a variable name
+    var action = getParameterByName('action');
+    var stripe = getParameterByName('stripe');
+
+    $(document).ready(function () {
+      if (action == 'subscribe') {
+        $('body').addClass("subscribe-success");
+      }
+      if (action == 'signup') {
+        window.location = 'https://blog.lsantos.dev#/portal/signup/monthly';
+      }
+      if (action == 'checkout') {
+        $('body').addClass("signup-success");
+      }
+      if (action == 'signin') {
+        $('body').addClass("signin-success");
+      }
+      if (stripe == 'success') {
+        $('body').addClass("checkout-success");
+      }
+      if (stripe == 'billing-update-success') {
+        $('body').addClass("billing-success");
+      }
+      if (stripe == 'billing-update-cancel') {
+        $('body').addClass("billing-cancel");
+      }
+
+      $('.notification-close').click(function () {
+        $(this).parent().addClass('closed');
+        var uri = window.location.toString();
+        if (uri.indexOf("?") > 0) {
+          var clean_uri = uri.substring(0, uri.indexOf("?"));
+          window.history.replaceState({}, document.title, clean_uri);
+        }
+      });
+
+      // Reset form on opening subscrion overlay
+      $('.subscribe-button').click(function () {
+        $('.subscribe-overlay form').removeClass();
+        $('.subscribe-email').val('');
+      });
+
+      // Account navigation menu
+      $('.account-menu-avatar').click(function (event) {
+        $(this).toggleClass('active');
+        event.stopPropagation();
+      });
+
+      $('.account-menu-dropdown').click(function (event) {
+        event.stopPropagation();
+      });
+
+      $('body').click(function () {
+        $('.account-menu-avatar').removeClass('active');
+      });
+    });
+  </script>
+  <script src="https://raw.githubusercontent.com/boyofgreen/ManUp.js/master/manup.min.js"></script>
+
+      <script>
+      sendViewPostEvent('60d3933604791135df105eb6', 'post', 'O Guia Completo do gRPC parte 4: Streams')
+    </script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+      document.querySelectorAll('pre[class*=language-]').forEach(function (node) {
+        node.classList.add('line-numbers');
+      });
+      Prism.highlightAll();
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/prism.min.js"></script>
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/toolbar/prism-toolbar.min.js"></script>
+  <script type="text/javascript"
+          src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/show-language/prism-show-language.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/plugins/autolinker/prism-autolinker.min.js"></script>
+  <script src="/assets/built/progress-read.js?v=7de4f92592"></script>
+  <script>
+    document
+      .querySelectorAll('.post-content a')
+      .forEach(e => e.addEventListener('click', (self) => sendClickEvent('inner_post_click', `Post "" | Link "${self.target.innerText}" | Sends to "${self.target.href}"`)))
+  </script>
+  <script>
+
+    // NOTE: Scroll performance is poor in Safari
+    // - this appears to be due to the events firing much more slowly in Safari.
+    //   Dropping the scroll event and using only a raf loop results in smoother
+    //   scrolling but continuous processing even when not scrolling
+    $(document).ready(function () {
+      // Start fitVids
+      var $postContent = $(".post-full-content");
+      $postContent.fitVids();
+      // End fitVids
+
+      var nav = document.querySelector('.site-nav-main');
+      var title = document.querySelector('.post-full-title');
+
+      var lastScrollY = window.scrollY;
+      var lastWindowHeight = window.innerHeight;
+      var lastDocumentHeight = $(document).height();
+      var ticking = false;
+
+      function onScroll() {
+        lastScrollY = window.scrollY;
+        requestTick();
+      }
+
+      function onResize() {
+        lastWindowHeight = window.innerHeight;
+        lastDocumentHeight = $(document).height();
+        requestTick();
+      }
+
+      function requestTick() {
+        if (!ticking) {
+          requestAnimationFrame(update);
+        }
+        ticking = true;
+      }
+
+      function update() {
+        var trigger = title.getBoundingClientRect().top + window.scrollY;
+        var triggerOffset = title.offsetHeight + 35;
+        var progressMax = lastDocumentHeight - lastWindowHeight;
+
+        // show/hide post title
+        if (lastScrollY >= trigger + triggerOffset) {
+          nav.classList.add('nav-post-title-active');
+        } else {
+          nav.classList.remove('nav-post-title-active');
+        }
+
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onResize, false);
+
+      update();
+
+
+      // Hover on avatar
+      var hoverTimeout;
+
+      $('.author-list-item').hover(function () {
+        var $this = $(this);
+
+        clearTimeout(hoverTimeout);
+
+        $('.author-card').removeClass('hovered');
+        $(this).children('.author-card').addClass('hovered');
+
+      }, function () {
+        var $this = $(this);
+
+        hoverTimeout = setTimeout(function () {
+          $this.children('.author-card').removeClass('hovered');
+        }, 800);
+      });
+
+    });
+  </script>
+
+  <script type="text/javascript">
+    fetch("https://blog.lsantos.dev/static/version.json")
+      .then((res) => res.json())
+      .then(res => {
+        document.querySelector('span.version-number').innerText = `v${res.version}`
+      });
+  </script>
+
+
+  
+
+</body>
+
+</html>
