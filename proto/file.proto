@@ -2,9 +2,9 @@ syntax = "proto3";
 
 service FileService {
   rpc Upload (stream File) returns (FileInfo);
-  rpc Download (FileInfo) returns (stream File);
+  rpc Download (FileName) returns (stream File);
   rpc Transform (stream File) returns (stream File);
-  rpc ListFiles (Void) returns (stream FileInfo);
+  rpc ListFiles (Void) returns (FileInfoList);
 }
 
 message Void {}
@@ -13,6 +13,14 @@ message FileInfo {
   string name = 1;
   string type = 2;
   uint32 size = 3;
+}
+
+message FileInfoList {
+  repeated FileInfo files = 1;
+}
+
+message FileName {
+  string name = 1;
 }
 
 message File {

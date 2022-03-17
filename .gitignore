@@ -1,7 +1,7 @@
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,macos,visualstudiocode,vim,windows,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,macos,visualstudiocode,vim,windows,linux
-
+server/uploads/
 ### Linux ###
 *~
 
@@ -24,7 +24,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
