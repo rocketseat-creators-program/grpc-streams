@@ -1,18 +1,22 @@
-// const transformStream = client.Transform()
-// const fileReadStream = fs.createReadStream(path.resolve(uploadDir, './fausto.txt'))
-// fileReadStream.on('data', (payload) => {
-//   transformStream.write({ data: Uint8Array.from(payload) })
-// })
+const fs = require('fs')
 
-// transformStream.on('data', (payload) => {
-//   console.log('Server response:', payload.data.toString())
-// })
+module.exports = (client, filePath) => {
+  const transformStream = client.Transform()
+  if (!fs.existsSync(filePath)) {
+    console.error('Arquivo não encontrado')
+    return process.exit(1)
+  }
 
-// fileReadStream.on('end', () => {
-//   transformStream.end()
-// })
+  const fileReadStream = fs.createReadStream(filePath)
+  fileReadStream.on('data', (payload) => {
+    transformStream.write({ data: Uint8Array.from(payload) })
+  })
 
-module.exports = (client, path) => {
-  console.log(`Transform: ${client, path}`)
+  transformStream.on('data', (payload) => {
+    process.stdout.write(payload.data.toString())
+  })
 
+  fileReadStream.on('end', () => {
+    transformStream.end()
+  })
 }
