@@ -1,18 +1,26 @@
-// const downloadStream = client.Download({ name: 'blog.html' }, (err, response) => {
-//   if (err) {
-//     console.error(err)
-//     return
-//   }
-//   console.log('Server response:', response)
-// })
+const path = require('path')
+const fs = require('fs')
 
-// downloadStream.on('data', (payload) => {
-//   console.log('Server response:', payload)
-// })
+module.exports = (client, fileName, options) => {
+  let outputPath = path.resolve(__dirname, '../downloads')
+  if (options.output) outputPath = path.resolve(options.output)
+  fs.mkdirSync(outputPath, { recursive: true })
 
-// downloadStream.on('end', () => {
-//   console.log('Server response:', 'File download finished')
-// })
+  const fileStream = fs.createWriteStream(path.join(outputPath, fileName), { flags: 'w+' })
+  const downloadStream = client.Download({ name: fileName })
 
-module.exports = (client, path) => {
+  downloadStream.on('error', (err) => {
+    console.error(err.details)
+    fs.unlinkSync(fileStream.path)
+    process.exit(1)
+  })
+
+  downloadStream.on('data', ({ data }) => {
+    fileStream.write(data)
+  })
+
+  downloadStream.on('end', () => {
+    console.log('Download Concluido')
+    process.exit(0)
+  })
 }
