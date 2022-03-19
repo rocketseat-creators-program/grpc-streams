@@ -30,6 +30,9 @@ program
 
 program
   .command('list')
+  .option('-t, --table', 'Exibe a saida como tabela (padrão)', true)
+  .option('-j, --json', 'Exibe a saida como JSON', false)
+  .option('-q, --quiet', 'Exibe apenas os nomes dos arquivos', false)
   .description('Lista todos os arquivos presentes no servidor')
   .action((...args) => list(client, ...args))
 
