@@ -1,46 +1,36 @@
+#!/usr/bin/env node
 const grpc = require('@grpc/grpc-js')
 const protoLoader = require('@grpc/proto-loader')
 const path = require('path')
-const fs = require('fs')
+const { program } = require('commander')
+const { upload, download, list, transform } = require('./commands')
 
-async function main () {
-  const uploadDir = path.resolve(__dirname, './uploads')
-  const protoObject = protoLoader.loadSync(path.resolve(__dirname, '../proto/file.proto'))
-  const FileDefinition = grpc.loadPackageDefinition(protoObject)
-  const client = new FileDefinition.FileService('0.0.0.0:50051', grpc.credentials.createInsecure())
+const protoObject = protoLoader.loadSync(path.resolve(__dirname, '../proto/file.proto'))
+const FileDefinition = grpc.loadPackageDefinition(protoObject)
+const client = new FileDefinition.FileService('0.0.0.0:50051', grpc.credentials.createInsecure())
 
-  const localFileList = fs.readdirSync(uploadDir)
-  // client.ListFiles({}, (err, response) => {
-  //   if (err) {
-  //     console.error(err)
-  //     return
-  //   }
-  //   console.log('Server response:', response)
-  // })
+program
+  .name('Cliente gRPC para manipulação de arquivos')
+  .description('Permite upload, download e transformação de arquivos de texto')
 
-  // for (const file of localFileList) {
-  //   const filePath = path.resolve(uploadDir, file)
-  //   const fileSize = fs.statSync(filePath).size
-  //   const metadata = new grpc.Metadata()
-  //   metadata.add('filename', file)
-  //   metadata.add('size', fileSize)
+program
+  .command('upload <arquivo>')
+  .description('Faz upload de arquivos para o servidor, se o primeiro argumento for uma pasta, todos os arquivos da pasta serão enviados')
+  .action((...args) => upload(client, ...args))
 
-  //   const fileReadStream = fs.createReadStream(filePath)
-  //   const uploadStream = client.Upload(metadata, (err, response) => {
-  //     if (err) throw err
-  //     console.log(response)
-  //   })
+program
+  .command('download <arquivo>')
+  .description('Faz download de arquivos para o servidor')
+  .action((...args) => download(client, ...args))
 
-  //   fileReadStream.on('data', (data) => {
-  //     uploadStream.write({ data })
-  //   })
+program
+  .command('transform <arquivo>')
+  .description('Transforma um arquivo de texto para ter todas as letras maiúsculas')
+  .action((...args) => transform(client, ...args))
 
-  //   fileReadStream.on('end', () => {
-  //     console.log(`Upload finalizado ${file}: `, fileSize)
-  //     uploadStream.end()
-  //   })
-  // }
-}
+program
+  .command('list')
+  .description('Lista todos os arquivos presentes no servidor')
+  .action((...args) => list(client, ...args))
 
-main().then(() => {
-}).catch(console.error)
+program.parse(process.argv)
