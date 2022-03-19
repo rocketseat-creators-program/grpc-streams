@@ -20,6 +20,7 @@ program
 
 program
   .command('download <arquivo>')
+  .option('-o, --output <path>', 'Caminho para salvar o arquivo')
   .description('Faz download de arquivos para o servidor')
   .action((...args) => download(client, ...args))
 
