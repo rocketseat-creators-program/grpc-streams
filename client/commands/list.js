@@ -5,6 +5,8 @@ module.exports = (client, options) => {
       return
     }
 
+    if (!response.files) return console.log('Nenhum arquivo encontrado')
+
     if (options.quiet) {
       console.log(response.files.map(file => file.name).join('\n'))
       return
